@@ -99,14 +99,17 @@ void Game::Render()
     float time = float(m_timer.GetTotalSeconds());
 
     // 스프라이트 배치를 시작합니다. (그리기 준비)
-    m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+    m_spriteBatch->Begin(
+        SpriteSortMode_Deferred, 
+        m_states->NonPremultiplied(), 
+        m_states->LinearWrap());
 
     // 텍스처(고양이)를 그립니다.
     m_spriteBatch->Draw(
         m_texture.Get(),    // 그릴 텍스처 리소스 (ID3D11ShaderResourceView*)
         m_screenPos,        // 화면상 위치 (화면 중앙)
-        nullptr,            // 소스 사각형 (nullptr이면 이미지 전체 그림)
-        Colors::Green,      // 틴트 색상 (White면 원본 색상 그대로)
+        &m_tileRect,        // 소스 사각형 (nullptr이면 이미지 전체 그림)
+        Colors::White,      // 틴트 색상 (White면 원본 색상 그대로)
         0.f,                // 회전 각도 (라디안 단위, 0이면 회전 없음)
         m_origin,           // 회전/크기변환의 기준점 (이미지의 중심점)
         1.f                 // 스프라이트 크기 조절
@@ -241,9 +244,15 @@ void Game::CreateDeviceDependentResources()
     CD3D11_TEXTURE2D_DESC catDesc;
     cat->GetDesc(&catDesc);
 
-    // 텍스처의 중심점을 계산합니다 (너비/2, 높이/2).
-    m_origin.x = float(catDesc.Width / 2);
-    m_origin.y = float(catDesc.Height / 2);
+    // 텍스처의 중심점을 계산합니다 (너비*2, 높이*2).
+    m_origin.x = float(catDesc.Width * 2);
+    m_origin.y = float(catDesc.Height * 2);
+
+    // 스프라이트 타일링
+    m_tileRect.left = catDesc.Width * 2;
+    m_tileRect.right = catDesc.Width * 6;
+    m_tileRect.top = catDesc.Height * 2;
+    m_tileRect.bottom = catDesc.Height * 6;
 
     m_states = std::make_unique<CommonStates>(device);
 }

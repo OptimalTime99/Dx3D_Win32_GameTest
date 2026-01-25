@@ -92,4 +92,7 @@ private:
 
     // 3단계: 알파 모드
     std::unique_ptr<DirectX::CommonStates> m_states;
+
+    // 8단계: 스프라이트 타일링
+    RECT m_tileRect;
 };
