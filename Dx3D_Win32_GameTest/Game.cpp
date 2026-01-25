@@ -225,7 +225,7 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(
         CreateWICTextureFromFile(
             device,
-            L"cat.png", // 파일명 (프로젝트 폴더에 이 파일이 있어야 함)
+            L"cat.dds", // 파일명 (프로젝트 폴더에 이 파일이 있어야 함)
             resource.GetAddressOf(), // 로드된 텍스처 리소스(정보 확인용)
             m_texture.ReleaseAndGetAddressOf() // 셰이더 리소스 뷰(실제 그릴 때 사용)
         ));

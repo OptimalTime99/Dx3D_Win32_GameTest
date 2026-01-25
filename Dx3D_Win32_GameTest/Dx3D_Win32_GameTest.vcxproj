@@ -126,6 +126,7 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="cat.dds" />
     <Image Include="cat.png" />
     <Image Include="directx.ico" />
   </ItemGroup>
