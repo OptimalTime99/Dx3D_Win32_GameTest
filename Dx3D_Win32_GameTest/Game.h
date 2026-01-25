@@ -9,7 +9,7 @@
 #include "StepTimer.h"          // 게임 루프의 시간(Delta Time)을 계산하고 관리하는 타이머 클래스입니다.
 #include <DirectXTK/SimpleMath.h>   // 벡터(Vector2, Vector3), 행렬 등을 쉽게 쓰기 위한 수학 라이브러리입니다.
 #include <DirectXTK/SpriteBatch.h>  // 2D 이미지를 효율적으로 그리기 위한 스프라이트 배칭 클래스입니다.
-
+#include <DirectXTK/CommonStates.h>
 
 #include <memory> // std::unique_ptr 같은 스마트 포인터를 사용하기 위한 표준 라이브러리입니다.
 
@@ -88,4 +88,8 @@ private:
     // [추가] 게임이 활성화(Focus) 상태인지 저장하는 변수
     // 초기값은 true로 설정
     bool m_isActive = true;
+
+
+    // 3단계: 알파 모드
+    std::unique_ptr<DirectX::CommonStates> m_states;
 };

@@ -97,7 +97,7 @@ void Game::Render()
     auto context = m_deviceResources->GetD3DDeviceContext(); // 디바이스 컨텍스트 가져오기
 
     // 스프라이트 배치를 시작합니다. (그리기 준비)
-    m_spriteBatch->Begin();
+    m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
 
     // 텍스처(고양이)를 그립니다.
     m_spriteBatch->Draw(
@@ -241,6 +241,8 @@ void Game::CreateDeviceDependentResources()
     // 텍스처의 중심점을 계산합니다 (너비/2, 높이/2).
     m_origin.x = float(catDesc.Width / 2);
     m_origin.y = float(catDesc.Height / 2);
+
+    m_states = std::make_unique<CommonStates>(device);
 }
 
 // 윈도우 크기가 변경될 때마다 다시 계산해야 하는 리소스 생성
@@ -260,6 +262,7 @@ void Game::OnDeviceLost()
     // 생성했던 디바이스 의존적 리소스들을 해제합니다.
     m_texture.Reset();
     m_spriteBatch.reset();
+    m_states.reset();
 }
 
 // 디바이스가 복구되었을 때 호출
