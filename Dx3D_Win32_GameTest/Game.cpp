@@ -96,6 +96,8 @@ void Game::Render()
     // TODO: 렌더링 코드를 여기에 작성합니다.
     auto context = m_deviceResources->GetD3DDeviceContext(); // 디바이스 컨텍스트 가져오기
 
+    float time = float(m_timer.GetTotalSeconds());
+
     // 스프라이트 배치를 시작합니다. (그리기 준비)
     m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
 
@@ -105,7 +107,7 @@ void Game::Render()
         m_screenPos,        // 화면상 위치 (화면 중앙)
         nullptr,            // 소스 사각형 (nullptr이면 이미지 전체 그림)
         Colors::White,      // 틴트 색상 (White면 원본 색상 그대로)
-        0.f,                // 회전 각도 (라디안 단위, 0이면 회전 없음)
+        cosf(time) * 4.f,   // 회전 각도 (라디안 단위, 0이면 회전 없음)
         m_origin            // 회전/크기변환의 기준점 (이미지의 중심점)
     );
 
