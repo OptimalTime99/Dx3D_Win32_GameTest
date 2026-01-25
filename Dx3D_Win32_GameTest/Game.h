@@ -95,4 +95,7 @@ private:
 
     // 8단계: 스프라이트 타일링
     RECT m_tileRect;
+
+    // 9단계: 스프라이트 늘리기
+    RECT m_stretchRect;
 };

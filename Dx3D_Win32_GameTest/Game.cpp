@@ -107,12 +107,9 @@ void Game::Render()
     // 텍스처(고양이)를 그립니다.
     m_spriteBatch->Draw(
         m_texture.Get(),    // 그릴 텍스처 리소스 (ID3D11ShaderResourceView*)
-        m_screenPos,        // 화면상 위치 (화면 중앙)
-        &m_tileRect,        // 소스 사각형 (nullptr이면 이미지 전체 그림)
-        Colors::White,      // 틴트 색상 (White면 원본 색상 그대로)
-        0.f,                // 회전 각도 (라디안 단위, 0이면 회전 없음)
-        m_origin,           // 회전/크기변환의 기준점 (이미지의 중심점)
-        1.f                 // 스프라이트 크기 조절
+        m_stretchRect,      // 화면상 위치 (화면 중앙)
+        nullptr,            // 소스 사각형 (nullptr이면 이미지 전체 그림)
+        Colors::White      // 틴트 색상 (White면 원본 색상 그대로)
     );
 
     // 스프라이트 배치를 종료합니다. (실제로 GPU에 그리기 명령 전송)
@@ -266,6 +263,11 @@ void Game::CreateWindowSizeDependentResources()
     // 이미지를 그릴 위치를 화면의 정중앙으로 설정합니다.
     m_screenPos.x = float(size.right) / 2.f;
     m_screenPos.y = float(size.bottom) / 2.f;
+
+    m_stretchRect.left = size.right / 4;
+    m_stretchRect.top = size.bottom / 4;
+    m_stretchRect.right = m_stretchRect.left + size.right / 2;
+    m_stretchRect.bottom = m_stretchRect.top + size.bottom / 2;
 }
 
 // 디바이스(그래픽 카드)가 소실되었을 때 호출 (예: 드라이버 업데이트, TDR)
