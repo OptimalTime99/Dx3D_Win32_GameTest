@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "directxtk/WICTextureLoader.h"
 
+
 extern void ExitGame() noexcept;
 
 using namespace DirectX;
@@ -31,6 +32,8 @@ void Game::Initialize(HWND window, int width, int height)
 
     m_deviceResources->CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
+
+
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
     // e.g. for 60 FPS fixed timestep update logic, call:
@@ -75,10 +78,22 @@ void Game::Render()
     Clear();
 
     m_deviceResources->PIXBeginEvent(L"Render");
-    auto context = m_deviceResources->GetD3DDeviceContext();
 
     // TODO: Add your rendering code here.
-    context;
+    auto context = m_deviceResources->GetD3DDeviceContext();
+
+    m_spriteBatch->Begin();
+
+    m_spriteBatch->Draw(
+        m_texture.Get(), 
+        m_screenPos, 
+        nullptr,
+        Colors::White, 
+        0.f, 
+        m_origin
+    );
+
+    m_spriteBatch->End();
 
     m_deviceResources->PIXEndEvent();
 
@@ -166,26 +181,44 @@ void Game::GetDefaultSize(int& width, int& height) const noexcept
 // These are the resources that depend on the device.
 void Game::CreateDeviceDependentResources()
 {
-    auto device = m_deviceResources->GetD3DDevice();
-
     // TODO: Initialize device dependent objects here (independent of window size).
-    device;
+    auto device = m_deviceResources->GetD3DDevice();
+    auto context = m_deviceResources->GetD3DDeviceContext();
 
+    m_spriteBatch = std::make_unique<SpriteBatch>(context);
+
+    ComPtr<ID3D11Resource> resource;
     DX::ThrowIfFailed(
-        CreateWICTextureFromFile(device, L"cat.png", nullptr,
+        CreateWICTextureFromFile(
+            device, 
+            L"cat.png",
+            resource.GetAddressOf(),
             m_texture.ReleaseAndGetAddressOf()));
+
+    ComPtr<ID3D11Texture2D> cat;
+    DX::ThrowIfFailed(resource.As(&cat));
+
+    CD3D11_TEXTURE2D_DESC catDesc;
+    cat->GetDesc(&catDesc);
+
+    m_origin.x = float(catDesc.Width / 2);
+    m_origin.y = float(catDesc.Height / 2);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
 void Game::CreateWindowSizeDependentResources()
 {
     // TODO: Initialize windows-size dependent objects here.
+    auto size = m_deviceResources->GetOutputSize();
+    m_screenPos.x = float(size.right) / 2.f;
+    m_screenPos.y = float(size.bottom) / 2.f;
 }
 
 void Game::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
     m_texture.Reset();
+    m_spriteBatch.reset();
 }
 
 void Game::OnDeviceRestored()

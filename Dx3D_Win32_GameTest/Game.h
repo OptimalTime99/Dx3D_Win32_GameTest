@@ -6,6 +6,9 @@
 
 #include "DeviceResources.h"
 #include "StepTimer.h"
+#include <DirectXTK/SimpleMath.h>
+#include <DirectXTK/SpriteBatch.h>
+
 
 #include <memory>
 
@@ -65,4 +68,9 @@ private:
 
     // 1단계: 텍스처 로딩
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+
+    // 2단계: 스프라이트 그리기
+    std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+    DirectX::SimpleMath::Vector2 m_screenPos;
+    DirectX::SimpleMath::Vector2 m_origin;
 };
