@@ -62,4 +62,7 @@ private:
 
     // Rendering loop timer.
     DX::StepTimer                           m_timer;
+
+    // 1단계: 텍스처 로딩
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 };

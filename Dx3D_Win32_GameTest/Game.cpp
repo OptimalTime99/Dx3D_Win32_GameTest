@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include "Game.h"
+#include "directxtk/WICTextureLoader.h"
 
 extern void ExitGame() noexcept;
 
@@ -169,6 +170,10 @@ void Game::CreateDeviceDependentResources()
 
     // TODO: Initialize device dependent objects here (independent of window size).
     device;
+
+    DX::ThrowIfFailed(
+        CreateWICTextureFromFile(device, L"cat.png", nullptr,
+            m_texture.ReleaseAndGetAddressOf()));
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -180,6 +185,7 @@ void Game::CreateWindowSizeDependentResources()
 void Game::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
+    m_texture.Reset();
 }
 
 void Game::OnDeviceRestored()
