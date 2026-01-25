@@ -98,4 +98,8 @@ private:
 
     // 9단계: 스프라이트 늘리기
     RECT m_stretchRect;
+
+    // 10단계: 배경 이미지 그리기
+    RECT m_fullscreenRect;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
 };

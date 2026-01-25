@@ -104,6 +104,9 @@ void Game::Render()
         m_states->NonPremultiplied(), 
         m_states->LinearWrap());
 
+    // 배경 이미지를 그립니다.
+    m_spriteBatch->Draw(m_background.Get(), m_fullscreenRect);
+
     // 텍스처(고양이)를 그립니다.
     m_spriteBatch->Draw(
         m_texture.Get(),    // 그릴 텍스처 리소스 (ID3D11ShaderResourceView*)
@@ -252,6 +255,16 @@ void Game::CreateDeviceDependentResources()
     m_tileRect.bottom = catDesc.Height * 6;
 
     m_states = std::make_unique<CommonStates>(device);
+
+    // 배경 이미지 그리기
+    DX::ThrowIfFailed(
+        CreateWICTextureFromFile(device, L"sunset.jpg", nullptr,
+            m_background.ReleaseAndGetAddressOf()));
+    
+    m_fullscreenRect = m_deviceResources->GetOutputSize();
+
+    m_origin.x = float(catDesc.Width / 2);
+    m_origin.y = float(catDesc.Height / 2);
 }
 
 // 윈도우 크기가 변경될 때마다 다시 계산해야 하는 리소스 생성
@@ -277,6 +290,7 @@ void Game::OnDeviceLost()
     m_texture.Reset();
     m_spriteBatch.reset();
     m_states.reset();
+    m_background.Reset();
 }
 
 // 디바이스가 복구되었을 때 호출
