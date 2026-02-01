@@ -74,6 +74,7 @@ void Game::Update(DX::StepTimer const& timer)
 
     // TODO: 여기에 캐릭터 이동, 충돌 처리 등 게임 로직을 작성합니다.
     m_ship->Update(elapsedTime);
+    m_stars->Update(elapsedTime * 500);
 }
 #pragma endregion
 
@@ -96,6 +97,7 @@ void Game::Render()
     // TODO: 렌더링 코드를 여기에 작성합니다.
     m_spriteBatch->Begin();
 
+    m_stars->Draw(m_spriteBatch.get());
     m_ship->Draw(m_spriteBatch.get(), m_shipPos);
 
     m_spriteBatch->End();
@@ -205,11 +207,19 @@ void Game::CreateDeviceDependentResources()
     auto context = m_deviceResources->GetD3DDeviceContext();
     m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
+    // 스프라이트 애니메이션
     DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"shipanimated.png",
         nullptr, m_texture.ReleaseAndGetAddressOf()));
 
     m_ship = std::make_unique<AnimatedTexture>();
     m_ship->Load(m_texture.Get(), 4, 20);
+
+    // 스크롤링 배경
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"starfield.png",
+        nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
+
+    m_stars = std::make_unique<ScrollingBackground>();
+    m_stars->Load(m_backgroundTex.Get());
 }
 
 // 윈도우 크기가 변경될 때마다 다시 계산해야 하는 리소스 생성
@@ -217,8 +227,10 @@ void Game::CreateWindowSizeDependentResources()
 {
     // 현재 윈도우 크기를 가져옵니다.
     auto size = m_deviceResources->GetOutputSize();
-    m_shipPos.x = float(size.right / 2);
+    m_shipPos.x = float(size.right / 2.2);
     m_shipPos.y = float((size.bottom / 2) + (size.bottom / 4));
+
+    m_stars->SetWindow(size.right, size.bottom);
 }
 
 // 디바이스(그래픽 카드)가 소실되었을 때 호출 (예: 드라이버 업데이트, TDR)
@@ -228,6 +240,9 @@ void Game::OnDeviceLost()
     m_ship.reset();
     m_spriteBatch.reset();
     m_texture.Reset();
+
+    m_stars.reset();
+    m_backgroundTex.Reset();
 }
 
 // 디바이스가 복구되었을 때 호출

@@ -10,6 +10,7 @@
 #include <DirectXTK/SimpleMath.h>   // 벡터(Vector2, Vector3), 행렬 등을 쉽게 쓰기 위한 수학 라이브러리입니다.
 #include <DirectXTK/SpriteBatch.h>  // 2D 이미지를 효율적으로 그리기 위한 스프라이트 배칭 클래스입니다.
 #include "AnimatedTexture.h"
+#include "ScrollingBackground.h"
 
 
 #include <memory> // std::unique_ptr 같은 스마트 포인터를 사용하기 위한 표준 라이브러리입니다.
@@ -80,4 +81,8 @@ private:
     std::unique_ptr<AnimatedTexture> m_ship;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
     DirectX::SimpleMath::Vector2 m_shipPos;
+
+    // 스크롤링 배경 변수
+    std::unique_ptr<ScrollingBackground> m_stars;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_backgroundTex;
 };

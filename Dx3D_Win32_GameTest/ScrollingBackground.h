@@ -63,6 +63,9 @@ public:
             mTextureSize.x = 0.f;
             mTextureSize.y = float(desc.Height);
 
+            // 1. 초기화: Origin 설정 (특이점 분석)
+            // 가로는 화면 중앙에 맞추기 위해 '중심(Center)'을 잡고,
+            // 세로는 위에서부터 그려내리기 위해 '상단(Top)'을 잡습니다.
             mOrigin.x = float(desc.Width) / 2.f;
             mOrigin.y = 0.f;
         }
@@ -82,6 +85,7 @@ public:
         mScreenPos.y = fmodf(mScreenPos.y, float(mTextureHeight));
     }
 
+    // 2. 렌더링: 무한 타일링 (Infinite Tiling Loop)
     void Draw(DirectX::SpriteBatch* batch) const
     {
         using namespace DirectX;
@@ -95,18 +99,25 @@ public:
                 Colors::White, 0.f, origin, g_XMOne, SpriteEffects_None, 0.f);
         }
 
+        // (0, TextureHeight) 값을 가진 벡터
         XMVECTOR textureSize = XMLoadFloat2(&mTextureSize);
 
+        // [Step A] 현재 위치보다 '위쪽' 빈 공간 채우기
+        // 스크롤이 내려오면서 윗부분이 비지 않도록, 텍스처 높이만큼 뺀 위치에 미리 하나 그립니다.
         screenPos -= textureSize;
 
         batch->Draw(mTexture.Get(), screenPos, nullptr,
             Colors::White, 0.f, origin, g_XMOne, SpriteEffects_None, 0.f);
 
-        int pixels = static_cast<int>(XMVectorGetY(screenPos)) + mTextureHeight;
-        while (pixels < mScreenHeight)
+        // [Step B] 화면 아래쪽 채우기 (Loop)
+        // 현재 위치부터 시작해서, 화면 높이(mScreenHeight)를 넘어설 때까지
+        // 계속해서 밑으로 이미지를 이어 붙여 그립니다.
+        int currentPixelY = static_cast<int>(XMVectorGetY(screenPos)) + mTextureHeight;
+        while (currentPixelY < mScreenHeight)
         {
+            // 다음 위치로 이동
             screenPos += textureSize;
-            pixels += mTextureHeight;
+            currentPixelY += mTextureHeight;
 
             batch->Draw(mTexture.Get(), screenPos, nullptr,
                 Colors::White, 0.f, origin, g_XMOne, SpriteEffects_None, 0.f);
