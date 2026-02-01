@@ -73,7 +73,7 @@ void Game::Update(DX::StepTimer const& timer)
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: 여기에 캐릭터 이동, 충돌 처리 등 게임 로직을 작성합니다.
-    elapsedTime; // (경고 방지용: 사용하지 않는 변수 처리)
+    m_ship->Update(elapsedTime);
 }
 #pragma endregion
 
@@ -94,7 +94,13 @@ void Game::Render()
     m_deviceResources->PIXBeginEvent(L"Render");
 
     // TODO: 렌더링 코드를 여기에 작성합니다.
-    auto context = m_deviceResources->GetD3DDeviceContext(); // 디바이스 컨텍스트 가져오기
+    m_spriteBatch->Begin();
+
+    m_ship->Draw(m_spriteBatch.get(), m_shipPos);
+
+    m_spriteBatch->End();
+
+
 
     // PIX 이벤트 종료 마커
     m_deviceResources->PIXEndEvent();
@@ -195,11 +201,15 @@ void Game::GetDefaultSize(int& width, int& height) const noexcept
 // 디바이스에 의존적인 리소스 생성 (창 크기와 무관하게 유지되는 것들: 텍스처, 모델 등)
 void Game::CreateDeviceDependentResources()
 {
-    // D3D 디바이스와 컨텍스트를 가져옵니다.
     auto device = m_deviceResources->GetD3DDevice();
     auto context = m_deviceResources->GetD3DDeviceContext();
+    m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
+    DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"shipanimated.png",
+        nullptr, m_texture.ReleaseAndGetAddressOf()));
 
+    m_ship = std::make_unique<AnimatedTexture>();
+    m_ship->Load(m_texture.Get(), 4, 20);
 }
 
 // 윈도우 크기가 변경될 때마다 다시 계산해야 하는 리소스 생성
@@ -207,12 +217,17 @@ void Game::CreateWindowSizeDependentResources()
 {
     // 현재 윈도우 크기를 가져옵니다.
     auto size = m_deviceResources->GetOutputSize();
+    m_shipPos.x = float(size.right / 2);
+    m_shipPos.y = float((size.bottom / 2) + (size.bottom / 4));
 }
 
 // 디바이스(그래픽 카드)가 소실되었을 때 호출 (예: 드라이버 업데이트, TDR)
 void Game::OnDeviceLost()
 {
     // 생성했던 디바이스 의존적 리소스들을 해제합니다.
+    m_ship.reset();
+    m_spriteBatch.reset();
+    m_texture.Reset();
 }
 
 // 디바이스가 복구되었을 때 호출

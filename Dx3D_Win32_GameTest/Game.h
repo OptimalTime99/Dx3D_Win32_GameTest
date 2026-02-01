@@ -9,6 +9,7 @@
 #include "StepTimer.h"          // 게임 루프의 시간(Delta Time)을 계산하고 관리하는 타이머 클래스입니다.
 #include <DirectXTK/SimpleMath.h>   // 벡터(Vector2, Vector3), 행렬 등을 쉽게 쓰기 위한 수학 라이브러리입니다.
 #include <DirectXTK/SpriteBatch.h>  // 2D 이미지를 효율적으로 그리기 위한 스프라이트 배칭 클래스입니다.
+#include "AnimatedTexture.h"
 
 
 #include <memory> // std::unique_ptr 같은 스마트 포인터를 사용하기 위한 표준 라이브러리입니다.
@@ -70,22 +71,13 @@ private:
     // 렌더링 루프 타이머
     DX::StepTimer                           m_timer; // 프레임 간의 시간 간격을 측정하는 타이머입니다.
 
-    // 1단계: 텍스처 로딩
-    // ID3D11ShaderResourceView는 텍스처 데이터를 셰이더(픽셀 셰이더 등)에서 읽을 수 있게 해주는 인터페이스입니다.
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
-
-    // 2단계: 스프라이트 그리기
-    // SpriteBatch는 2D 이미지를 그리기 위한 DirectXTK의 핵심 클래스입니다 (Start -> Draw -> End).
-    std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-
-    // 화면상의 위치를 저장하는 벡터 (x, y 좌표)
-    DirectX::SimpleMath::Vector2 m_screenPos;
-
-    // 텍스처(이미지)의 중심점(Pivot)을 저장하는 벡터
-    DirectX::SimpleMath::Vector2 m_origin;
-
-
     // [추가] 게임이 활성화(Focus) 상태인지 저장하는 변수
     // 초기값은 true로 설정
     bool m_isActive = true;
+
+    // 스프라이트 애니메이션 변수
+    std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+    std::unique_ptr<AnimatedTexture> m_ship;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+    DirectX::SimpleMath::Vector2 m_shipPos;
 };
